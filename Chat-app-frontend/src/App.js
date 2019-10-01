@@ -5,7 +5,7 @@ import Home from './components/Home';
 const App = () => (
     <div>
         <main>
-            
+            <Route path="/" component={Home} />
         </main>
     </div>
 )
