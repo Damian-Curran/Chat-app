@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
-class Home extends Component {
-    constructor() {
+class Home extends Component{
+    constructor(){
         super();
         this.state = {
             err: "",
@@ -10,44 +10,57 @@ class Home extends Component {
             ws: ""
         }
     }
-
-    componentDidMount() {
+    
+    componentDidMount(){
         const socket = new WebSocket('ws://localhost:8080/names');
-        console.log("connected")
+        if(!socket.onopen){
+            this.setState({err: "Connection was not established"});
+        }
 
-        this.setState({ ws: socket });
+        socket.onopen = () =>{
+            console.log("connected")
+            
+            this.setState({ws: socket, connection: 1});
 
-        socket.addEventListener('message', async (event) => {
-            const response = event.data;
-            this.state.response.push(response);
-            this.setState({ response: this.state.response });
-        });
+            socket.addEventListener('message', async (event) => { 
+              const response = event.data;
+              this.state.response.push(response);
+              this.setState({response: this.state.response}); 
+            });
+        }
     }
-
+    
     disconnect() {
         var ws = this.state.ws;
 
-        ws.close();
-
-        this.setState({ ws: "" });
-        console.log("Disconnected");
+        if(ws){
+            if (ws != null) {
+                ws.close();
+            }
+            this.setState({ws: ""});
+            console.log("Disconnected");
+        }
     }
-
+    
     sendName() {
         var ws = this.state.ws;
-        ws.send("damian curran");
+
+        if(ws){
+            ws.send("damian curran");
+        }
     }
 
-    render() {
+    render(){
         const responses = [];
 
-        for (const [index, value] of this.state.response.entries()) {
+        for(const [index, value] of this.state.response.entries()){
             responses.push(<li key={index}> {value} </li>)
         }
 
-        return (
+        return(
             <div>
                 Welcome Home
+                <div> {this.state.err} </div>
                 <div> {responses} </div>
                 <button onClick={this.sendName.bind(this)}> Send to websocket </button>
                 <button onClick={this.disconnect.bind(this)}> Disconnect from websocket </button>
