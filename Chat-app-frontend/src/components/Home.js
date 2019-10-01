@@ -12,7 +12,7 @@ class Home extends Component{
     }
     
     componentDidMount(){
-        const socket = new WebSocket('ws://localhost:8080/names');
+        const socket = new WebSocket('ws://localhost:8080/name');
         if(!socket.onopen){
             this.setState({err: "Connection was not established"});
         }
